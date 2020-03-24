@@ -27,4 +27,4 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - suffix: .csv #only trigger event for files end with .csv
-          #existing: true  # for already existing buckets, this many need specified role to have IAM Create role permission.
+          #existing: true  # for already existing buckets, this will need specified role to have IAM Create role permission.
