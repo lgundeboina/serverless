@@ -1,0 +1,30 @@
+service: trigger-lambda-on-s3-event
+
+custom:  
+  vars: ${file(./config.yml)}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${self:custom.vars.region}   
+  role: arn:aws:iam::${self:custom.vars.accountId}:role/${self:custom.vars.roleName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
+
+  s3: ${file(./s3.yml)}
+  environment:
+    REGION: ${self:custom.vars.region}
+
+functions:
+  s3FileProcess:
+    handler: handler.fileProcess    
+    events:
+      - s3:
+          bucket: uploadbucket  # this should be same as in s3  property name  
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .csv #only trigger event for files end with .csv
+          #existing: true  # for already existing buckets, this many need specified role to have IAM Create role permission.
