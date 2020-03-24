@@ -1,0 +1,21 @@
+uploadbucket:
+  name: ${self:custom.vars.bucketName}
+  corsConfiguration:
+    CorsRules:
+      -
+        AllowedHeaders:
+          - "*"
+        AllowedOrigins:
+          - "*"
+        AllowedMethods:
+          - POST
+          - GET
+          - PUT
+          - DELETE
+          - HEAD
+        MaxAge: 3000
+  lifecycleConfiguration:  # Files will be deleted automatically after ExpirationInDays(30)
+    Rules:
+    - Id: file-upload-expiration           
+      Status: Enabled
+      ExpirationInDays: '30'

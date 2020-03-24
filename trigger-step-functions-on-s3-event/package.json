@@ -1,0 +1,12 @@
+{
+  "name": "trigger-step-functions-on-s3-event",
+  "description": "Process files in step functions from s3 after file(s) upload to s3.",
+  "version": "1.0.0",
+  "author": "Lakshman Gundeboina <l.gundeboina@gmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-step-functions": "^2.17.2"
+  }
+}

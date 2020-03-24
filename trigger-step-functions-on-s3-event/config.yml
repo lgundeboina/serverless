@@ -1,0 +1,4 @@
+accountId: AWS_ACCOUNT_ID # Your AWS account Id
+roleName: IAM_ROLE # IAM role
+region: us-east-2
+bucketName: BUCKET_NAME #bucket name for file uploads

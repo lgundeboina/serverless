@@ -1,0 +1,65 @@
+service: trigger-step-functions-on-s3-event
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters
+
+custom:  
+  vars: ${file(./config.yml)}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${self:custom.vars.region}   
+  role: arn:aws:iam::${self:custom.vars.accountId}:role/${self:custom.vars.roleName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
+
+  s3: ${file(./s3.yml)}
+  environment:
+    REGION: ${self:custom.vars.region}
+
+functions:
+  s3EventListner:
+    handler: handler.eventListner
+    environment:
+      statemachine_arn: ${self:resources.Outputs.S3FileProcessing.Value}
+    events:
+        - s3:
+            bucket: uploadbucket  # this should be same as in s3  property name  
+            event: s3:ObjectCreated:*
+            rules:
+              - suffix: .csv #only trigger event for files end with .csv
+            #existing: true  # for already existing buckets, this many need specified role to have IAM Create role permission.
+
+  s3EventProcess:
+    handler: handler.eventProcess
+
+  s3FileProcess:
+    handler: handler.fileProcess
+
+stepFunctions:
+  stateMachines:
+    s3FileProcessing:
+      name: s3FileProcessing
+      definition:
+        Comment: "Step Function to Process files after uploaded to s3 bucket."
+        StartAt: EventProcessStep
+        States:
+          EventProcessStep:
+            Type: Task
+            Resource: arn:aws:lambda:${self:custom.vars.region}:${self:custom.vars.accountId}:function:${self:service}-${opt:stage}-s3EventProcess # You can get ARN from resources Output too.
+            Next: FileProcessStep
+          FileProcessStep:
+            Type: Task
+            InputPath: "$"
+            Resource: arn:aws:lambda:${self:custom.vars.region}:${self:custom.vars.accountId}:function:${self:service}-${opt:stage}-s3FileProcess # You can get ARN from resources Output too.
+            End: true
+resources:
+  Outputs:
+    S3FileProcessing:
+      Description: The ARN of the s3FileProcessing State Machine
+      Value:
+        Ref: S3FileProcessing
