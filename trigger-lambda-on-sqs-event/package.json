@@ -1,0 +1,8 @@
+{
+  "name": "trigger-lambda-on-sqs-event",
+  "description": "Process files from s3 after a file(s) upload to s3.",
+  "version": "1.0.0",
+  "author": "Lakshman Gundeboina <l.gundeboina@gmail.com>",
+  "license": "MIT",
+  "dependencies": {}
+}
